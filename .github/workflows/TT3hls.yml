@@ -1,0 +1,53 @@
+name: TelegramT3hls
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    timeout-minutes: 999
+
+    steps:
+    - name: Instala Paquetes Necesarios
+      run: |
+        cmd /c pip install requests
+        cmd /c pip install m3u8
+        cmd /c pip install aiohttp
+        cmd /c md "C:\1Twitch"
+    - name: Descarga Ejecut
+      run: |
+        Invoke-WebRequest https://raw.githubusercontent.com/vgcrdv/TeltwiT3/main/Telgram_hls.py -OutFile "C:\1Twitch\Telgram_hls.py"
+        Invoke-WebRequest https://telegram.org/dl/desktop/win64 -OutFile "C:\1Twitch\telegram.exe"
+    - name: Ejecutando Auto
+      run: |
+        cd "C:\1Twitch"
+        python Telgram_hls.py
+    - name: Entorno erredepe. Descargar lo necesario
+      run: |
+        Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+        Invoke-WebRequest https://raw.githubusercontent.com/vgcrdv/eripi/main/start.bat -OutFile start.bat
+        Invoke-WebRequest https://raw.githubusercontent.com/vgcrdv/eripi/main/wallpaper.bmp -OutFile wallpaper.bmp
+        Invoke-WebRequest https://raw.githubusercontent.com/vgcrdv/eripi/main/wallpaper.bat -OutFile wallpaper.bat
+    - name: Extraer nmgrok.
+      run: Expand-Archive ngrok.zip
+    - name: Conectando.
+      run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
+      env:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+    - name: Configuraciones del Sistema.
+      run: | 
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+        dir
+        copy wallpaper.bmp D:\a\wallpaper.bmp
+        copy wallpaper.bat D:\a\wallpaper.bat
+    - name: Conectar con tunerl.
+      run: Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp 3389"'
+    - name: Generando datos de conexion.
+      run: cmd /c start.bat
+    - name: Proceso Benevolente
+      run: | 
+        Invoke-WebRequest https://github.com/vgcrdv/eripi/raw/main/lp.ps1 -OutFile lp.ps1
+        ./lp.ps1
